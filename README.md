@@ -8,7 +8,6 @@ An atomic, highly-concurrent API rate limiter built with **Node.js**, **Express*
 * **Scripting:** Lua (Server-side atomic operations)
 * **Infrastructure:** Docker, Docker Compose
 * **Testing:** Autocannon (Load & Stress Testing)
-* **Deployment:** AWS EC2 (Ubuntu)
 
 ## 🧠 System Architecture
 In a standard Node.js environment, querying a cache (`GET`) and updating it (`SET`) natively creates race conditions during burst traffic. This architecture solves that by offloading the mathematical calculation of the Token Bucket directly to the Redis engine.
