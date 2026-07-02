@@ -30,11 +30,4 @@ The system was stress-tested using **Autocannon** to simulate massive burst traf
 * **Rejected (4xx):** 44,980+ requests successfully blocked with `429 Too Many Requests`.
 * **Race Conditions / Leaks:** 0
 
-## 🛠️ Local Setup & Installation
 
-This project is fully containerized. You do not need Node.js or Redis installed on your local machine—only Docker.
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/production-rate-limiter.git](https://github.com/YOUR_USERNAME/production-rate-limiter.git)
-   cd production-rate-limiter
