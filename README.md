@@ -1,4 +1,4 @@
-# Production-Grade Distributed API Rate Limiter
+# Distributed API Rate Limiter
 
 An atomic, highly-concurrent API rate limiter built with **Node.js**, **Express**, and **Redis**. This microservice implements the "lazy evaluation" **Token Bucket algorithm** using server-side **Lua scripting** to guarantee 100% transaction atomicity and entirely eliminate multi-thread race conditions under heavy load.
 
