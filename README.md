@@ -13,7 +13,8 @@ Stress-tested using **Autocannon** to simulate massive burst traffic (100 concur
 * **Average Latency:** ~16.59ms
 * **Reliability:** Handled 44,318 total requests in 10 seconds. Successfully limited successful requests to **exactly 19** (mathematically perfect: 10 initial + 9 refilled) while successfully blocking **44,299** excess requests with `429 Too Many Requests`—all with zero bucket leakage or race conditions.
 
-  <img width="805" height="395" alt="image" src="https://github.com/user-attachments/assets/ada69cb2-bf5a-4bc9-885a-5dc16f37b1e4" /> 
+  <img width="932" height="412" alt="Screenshot 2026-07-18 223840" src="https://github.com/user-attachments/assets/3ff2cc29-d000-47ba-a4e7-5018cd784233" />
+
 
 ## Core Architecture & Engineering Decisions
 * **Atomic Execution:** Lua scripting inside Redis is utilized to calculate elapsed time, partial token generation, and bucket capacity in a single, indivisible operation. This guarantees zero race conditions during simultaneous request bursts.
