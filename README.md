@@ -4,7 +4,6 @@
 ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)
 
 An atomic, highly-concurrent API rate limiter built to protect infrastructure from burst traffic and spam. This microservice implements the "lazy evaluation" **Token Bucket algorithm** using server-side **Lua scripting** to guarantee 100% transaction atomicity and entirely eliminate multi-thread race conditions.
 
