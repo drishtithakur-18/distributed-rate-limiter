@@ -1,33 +1,52 @@
 # Distributed API Rate Limiter
 
-An atomic, highly-concurrent API rate limiter built with **Node.js**, **Express**, and **Redis**. This microservice implements the "lazy evaluation" **Token Bucket algorithm** using server-side **Lua scripting** to guarantee 100% transaction atomicity and entirely eliminate multi-thread race conditions under heavy load.
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)
 
-## 🚀 Tech Stack
-* **Backend:** Node.js, Express.js
-* **Database / Cache:** Redis
-* **Scripting:** Lua (Server-side atomic operations)
-* **Infrastructure:** Docker, Docker Compose
-* **Testing:** Autocannon (Load & Stress Testing)
+An atomic, highly-concurrent API rate limiter built to protect infrastructure from burst traffic and spam. This microservice implements the "lazy evaluation" **Token Bucket algorithm** using server-side **Lua scripting** to guarantee 100% transaction atomicity and entirely eliminate multi-thread race conditions.
 
-## 🧠 System Architecture
-In a standard Node.js environment, querying a cache (`GET`) and updating it (`SET`) natively creates race conditions during burst traffic. This architecture solves that by offloading the mathematical calculation of the Token Bucket directly to the Redis engine.
+## Load Testing & Performance
+Stress-tested using **Autocannon** to simulate massive burst traffic (100 concurrent connections over 10 seconds). The bucket capacity was set to 10 tokens with a 1 token/sec refill rate.
+* **Average Throughput:** ~4,469 Requests/Second
+* **Average Latency:** ~16.59ms
+* **Reliability:** Handled 44,318 total requests in 10 seconds. Successfully limited successful requests to **exactly 19** (mathematically perfect: 10 initial + 9 refilled) while successfully blocking **44,299** excess requests with `429 Too Many Requests`—all with zero bucket leakage or race conditions.
 
-1. **Request Interception:** Express middleware intercepts incoming HTTP requests.
-2. **Atomic Execution:** A Lua script is sent to Redis, containing the user's IP, maximum capacity, refill rate, and the current timestamp.
-3. **Evaluation:** Redis natively calculates elapsed time, fractional token generation, and capacity limits in a single, indivisible operation.
-4. **Header Injection:** The API returns standard rate-limiting headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`) to allow frontend clients to implement backoff logic.
+  <img width="805" height="395" alt="image" src="https://github.com/user-attachments/assets/ada69cb2-bf5a-4bc9-885a-5dc16f37b1e4" /> 
 
-## 📊 Performance & Load Testing
-The system was stress-tested using **Autocannon** to simulate massive burst traffic and verify the absence of bucket leakage.
+## Core Architecture & Engineering Decisions
+* **Atomic Execution:** Lua scripting inside Redis is utilized to calculate elapsed time, partial token generation, and bucket capacity in a single, indivisible operation. This guarantees zero race conditions during simultaneous request bursts.
+* **Lazy Evaluation:** Instead of running heavy background cron jobs to refill tokens, the script calculates the exact tokens generated at the exact millisecond a request is made, significantly reducing CPU overhead.
+* **Fail-Open Fault Tolerance:** The middleware is wrapped in defensive `try/catch` logic. If the Redis cluster crashes or times out, the system "fails open," allowing traffic through to ensure the core API remains highly available.
+* **Spammer Protection:** Updates Redis state and refreshes the TTL (Time-To-Live) even on rejected requests. This prevents malicious botnets from draining the bucket, waiting for expiration, and getting a free reset.
+* **Standard Header Injection:** Automatically injects `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `Retry-After` headers for seamless client backoff logic.
 
-**Test Conditions:** * 100 concurrent connections 
-* 10-second sustained burst
-* Bucket Capacity: 10 tokens | Refill Rate: 1 token/sec
+## Architecture Flow
+`Client/Bot Request` ➔ `Express App` ➔ `Rate Limiter Middleware` ➔ `Redis (Atomic Lua Script)` ➔ `Controller Response`
 
-**Results:**
-* **Total Requests Handled:** 45,000+ in 10 seconds.
-* **Successful (2xx):** ~19-21 requests (Mathematically perfect: 10 initial tokens + 9-10 refilled over the test duration).
-* **Rejected (4xx):** 44,980+ requests successfully blocked with `429 Too Many Requests`.
-* **Race Conditions / Leaks:** 0
+## Local Setup & Installation
+
+**Prerequisites:** Docker, Docker Compose, Node.js (v18+)
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/drishtithakur-18/distributed-rate-limiter.git
+ 2. **Start everything (Redis + API server):**
+   ```bash
+docker-compose up --build
+ ```
+3. **Test the endpoint:**
+   ```bash
+   curl http://localhost:3000/api/data
+7. **Run the load test:**
+   ```bash
+   npx autocannon -c 100 -d 10 http://localhost:3000/api/data
+
+   ## 📂 Project Structure
+
+<img width="375" height="301" alt="image" src="https://github.com/user-attachments/assets/75bf61af-ee74-44c7-aff5-f03743aaaa87" />
+
 
 
