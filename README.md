@@ -35,7 +35,7 @@ Stress-tested using **Autocannon** to simulate massive burst traffic (100 concur
    git clone https://github.com/drishtithakur-18/distributed-rate-limiter.git
  2. **Start everything (Redis + API server):**
    ```bash
-docker-compose up --build
+   docker-compose up --build
  ```
 3. **Test the endpoint:**
    ```bash
@@ -43,6 +43,7 @@ docker-compose up --build
 7. **Run the load test:**
    ```bash
    npx autocannon -c 100 -d 10 http://localhost:3000/api/data
+    ```
 
    ## 📂 Project Structure
 
