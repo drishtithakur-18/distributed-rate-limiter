@@ -9,11 +9,13 @@ An atomic, highly-concurrent API rate limiter built to protect infrastructure fr
 
 ## Load Testing & Performance
 Stress-tested using **Autocannon** to simulate massive burst traffic (100 concurrent connections over 10 seconds). The bucket capacity was set to 10 tokens with a 1 token/sec refill rate.
-* **Average Throughput:** ~4,469 Requests/Second
-* **Average Latency:** ~16.59ms
-* **Reliability:** Handled 44,318 total requests in 10 seconds. Successfully limited successful requests to **exactly 19** (mathematically perfect: 10 initial + 9 refilled) while successfully blocking **44,299** excess requests with `429 Too Many Requests`—all with zero bucket leakage or race conditions.
 
-  <img width="932" height="412" alt="Screenshot 2026-07-18 223840" src="https://github.com/user-attachments/assets/3ff2cc29-d000-47ba-a4e7-5018cd784233" />
+* **Total Requests Handled:** 45,000+ in 10 seconds
+* **Throughput:** ~4,486 Requests/Second
+* **Average Latency:** 20.89ms
+* **Reliability:** Mathematically verified. Successfully limited successful requests to **19** (10 initial + 9 refilled) while correctly intercepting and blocking **44,659** excess requests with `429 Too Many Requests`.
+
+<img width="932" height="412" alt="Screenshot 2026-07-18 223840" src="https://github.com/user-attachments/assets/3ff2cc29-d000-47ba-a4e7-5018cd784233" />
 
 
 ## Core Architecture & Engineering Decisions
@@ -33,10 +35,10 @@ Stress-tested using **Autocannon** to simulate massive burst traffic (100 concur
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/drishtithakur-18/distributed-rate-limiter.git
- 2. **Start everything (Redis + API server):**
+2. **Start everything (Redis + API server):**
    ```bash
    docker-compose up --build
- ```
+   ```
 3. **Test the endpoint:**
    ```bash
    curl http://localhost:3000/api/data
